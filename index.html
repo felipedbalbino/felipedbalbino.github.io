@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Felipe Balbino — Desenvolvedor em formação</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0d0d0f;
+      --bg2: #131316;
+      --bg3: #1a1a1f;
+      --border: #222228;
+      --accent: #4f8ef7;
+      --accent2: #7c5cfc;
+      --text: #e8e8f0;
+      --muted: #6b6b80;
+      --tag-bg: #1c1c24;
+      --tag-border: #2a2a38;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Mono', monospace;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* NOISE TEXTURE */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.4;
+    }
+
+    /* GRID LINES */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(79,142,247,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(79,142,247,0.03) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* NAV */
+    nav {
+      padding: 28px 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1rem;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    .nav-logo span {
+      color: var(--accent);
+    }
+
+    .nav-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.72rem;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #3ecf8e;
+      box-shadow: 0 0 8px #3ecf8e;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    /* HERO */
+    .hero {
+      padding: 72px 0 56px;
+      opacity: 0;
+      transform: translateY(24px);
+      animation: fadeUp 0.7s ease forwards 0.1s;
+    }
+
+    .hero-label {
+      font-size: 0.7rem;
+      color: var(--accent);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .hero-label::before {
+      content: '';
+      display: block;
+      width: 24px;
+      height: 1px;
+      background: var(--accent);
+    }
+
+    h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2.4rem, 7vw, 3.8rem);
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      margin-bottom: 24px;
+    }
+
+    h1 .line2 {
+      display: block;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-desc {
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.8;
+      max-width: 520px;
+      margin-bottom: 36px;
+    }
+
+    .hero-desc strong {
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .hero-cta {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 11px 22px;
+      border-radius: 6px;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.78rem;
+      font-weight: 500;
+      text-decoration: none;
+      letter-spacing: 0.02em;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background: #6ba3ff;
+      transform: translateY(-1px);
+      box-shadow: 0 8px 24px rgba(79,142,247,0.3);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-ghost:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      transform: translateY(-1px);
+    }
+
+    /* DIVIDER */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 8px 0;
+    }
+
+    /* SECTION */
+    section {
+      padding: 52px 0;
+      border-top: 1px solid var(--border);
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeUp 0.6s ease forwards;
+    }
+
+    section:nth-child(2) { animation-delay: 0.2s; }
+    section:nth-child(3) { animation-delay: 0.35s; }
+    section:nth-child(4) { animation-delay: 0.5s; }
+    section:nth-child(5) { animation-delay: 0.65s; }
+
+    @keyframes fadeUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .section-label {
+      font-size: 0.65rem;
+      color: var(--muted);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 28px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* SOBRE */
+    .sobre-text {
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.9;
+    }
+
+    .sobre-text p + p { margin-top: 16px; }
+
+    .sobre-text strong {
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .highlight-box {
+      margin-top: 24px;
+      padding: 16px 20px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 4px;
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.7;
+      font-style: italic;
+    }
+
+    /* SKILLS */
+    .skills-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 500px) {
+      .skills-grid { grid-template-columns: 1fr; }
+    }
+
+    .skill-group h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 12px;
+      letter-spacing: 0.02em;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tag {
+      padding: 5px 12px;
+      background: var(--tag-bg);
+      border: 1px solid var(--tag-border);
+      border-radius: 4px;
+      font-size: 0.72rem;
+      color: var(--muted);
+      letter-spacing: 0.03em;
+      transition: all 0.2s;
+    }
+
+    .tag:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .tag.learning {
+      border-color: rgba(79,142,247,0.3);
+      color: var(--accent);
+      background: rgba(79,142,247,0.06);
+    }
+
+    /* EXPERIÊNCIA */
+    .exp-list {
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    .exp-item {
+      display: grid;
+      grid-template-columns: 80px 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 500px) {
+      .exp-item { grid-template-columns: 1fr; }
+    }
+
+    .exp-date {
+      font-size: 0.68rem;
+      color: var(--muted);
+      padding-top: 3px;
+      letter-spacing: 0.04em;
+      line-height: 1.6;
+    }
+
+    .exp-content h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+
+    .exp-content .company {
+      font-size: 0.72rem;
+      color: var(--accent);
+      margin-bottom: 10px;
+      letter-spacing: 0.03em;
+    }
+
+    .exp-content p {
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.8;
+    }
+
+    /* FORMAÇÃO */
+    .edu-list {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .edu-item {
+      padding: 18px 20px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      transition: border-color 0.2s;
+    }
+
+    .edu-item:hover { border-color: var(--accent); }
+
+    .edu-info h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .edu-info p {
+      font-size: 0.72rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .edu-badge {
+      font-size: 0.65rem;
+      padding: 4px 10px;
+      border-radius: 20px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .edu-badge.active {
+      background: rgba(62,207,142,0.1);
+      color: #3ecf8e;
+      border: 1px solid rgba(62,207,142,0.2);
+    }
+
+    .edu-badge.done {
+      background: var(--tag-bg);
+      color: var(--muted);
+      border: 1px solid var(--tag-border);
+    }
+
+    /* PROJETOS */
+    .projects-placeholder {
+      padding: 36px 24px;
+      background: var(--bg2);
+      border: 1px dashed var(--border);
+      border-radius: 6px;
+      text-align: center;
+    }
+
+    .projects-placeholder .icon {
+      font-size: 1.8rem;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .projects-placeholder h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .projects-placeholder p {
+      font-size: 0.76rem;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    /* CONTATO */
+    .contact-links {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .contact-link {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .contact-link:hover {
+      border-color: var(--accent);
+      transform: translateX(4px);
+    }
+
+    .contact-link-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .contact-link-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      background: var(--tag-bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+    }
+
+    .contact-link-info h4 {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .contact-link-info p {
+      font-size: 0.68rem;
+      color: var(--muted);
+    }
+
+    .contact-arrow {
+      color: var(--muted);
+      font-size: 0.8rem;
+      transition: color 0.2s;
+    }
+
+    .contact-link:hover .contact-arrow { color: var(--accent); }
+
+    /* FOOTER */
+    footer {
+      padding: 32px 0;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    footer p {
+      font-size: 0.68rem;
+      color: var(--muted);
+    }
+
+    footer span {
+      color: var(--accent);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- NAV -->
+    <nav>
+      <a href="#" class="nav-logo">felipe<span>.</span>dev</a>
+      <div class="nav-status">
+        <span class="status-dot"></span>
+        aberto a oportunidades
+      </div>
+    </nav>
+
+    <!-- HERO -->
+    <div class="hero">
+      <div class="hero-label">Desenvolvedor em formação</div>
+      <h1>
+        Felipe Balbino
+        <span class="line2">do operacional<br>ao digital.</span>
+      </h1>
+      <p class="hero-desc">
+        Estudante de <strong>Análise e Desenvolvimento de Sistemas</strong> em transição do chão de fábrica para a tecnologia.
+        Construindo do zero com <strong>HTML, CSS, JavaScript e Python</strong> — com disciplina, consistência e sem atalhos.
+      </p>
+      <div class="hero-cta">
+        <a href="https://www.linkedin.com/in/felipedbalbino" target="_blank" class="btn btn-primary">→ LinkedIn</a>
+        <a href="https://github.com/felipedbalbino" target="_blank" class="btn btn-ghost">⌥ GitHub</a>
+      </div>
+    </div>
+
+    <!-- SOBRE -->
+    <section>
+      <div class="section-label">sobre</div>
+      <div class="sobre-text">
+        <p>
+          Passei <strong>3 anos no chão de fábrica</strong> operando máquinas industriais, executando checklists críticos (PPRO, APPCC) e garantindo que nenhum desvio passasse despercebido.
+        </p>
+        <p>
+          Aprendi que <strong>sistema que falha tem custo real</strong>. E que atenção a processo não é detalhe — é o trabalho.
+        </p>
+        <p>
+          Em algum momento percebi que queria <strong>construir os sistemas</strong>, não só operar dentro deles. Hoje curso ADS na UNINTER e estou documentando cada passo dessa transição publicamente.
+        </p>
+        <div class="highlight-box">
+          "A indústria me ensinou disciplina. A tecnologia vai me dar o próximo capítulo."
+        </div>
+      </div>
+    </section>
+
+    <!-- SKILLS -->
+    <section>
+      <div class="section-label">skills</div>
+      <div class="skills-grid">
+        <div class="skill-group">
+          <h3>Tecnologia</h3>
+          <div class="tags">
+            <span class="tag learning">HTML5</span>
+            <span class="tag learning">CSS3</span>
+            <span class="tag learning">JavaScript</span>
+            <span class="tag learning">Python</span>
+            <span class="tag">Lógica de Programação</span>
+            <span class="tag">VS Code</span>
+            <span class="tag">Google Colab</span>
+            <span class="tag">Git</span>
+          </div>
+        </div>
+        <div class="skill-group">
+          <h3>Diferenciais</h3>
+          <div class="tags">
+            <span class="tag">Controle de Qualidade</span>
+            <span class="tag">Análise de Processos</span>
+            <span class="tag">Atenção a Detalhes</span>
+            <span class="tag">Resolução de Problemas</span>
+            <span class="tag">Disciplina</span>
+            <span class="tag">Eletroeletrônica</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- EXPERIÊNCIA -->
+    <section>
+      <div class="section-label">experiência</div>
+      <div class="exp-list">
+        <div class="exp-item">
+          <div class="exp-date">dez 2025<br>atual</div>
+          <div class="exp-content">
+            <h3>Operador de Máquinas</h3>
+            <div class="company">Vigor Alimentos</div>
+            <p>Operação e monitoramento de máquinas industriais com execução diária de checklists PPRO e APPCC — monitorando temperatura, estado de peças e pontos críticos de controle. Atuação em ambiente onde falha tem custo real.</p>
+          </div>
+        </div>
+        <div class="exp-item">
+          <div class="exp-date">out 2022<br>dez 2025</div>
+          <div class="exp-content">
+            <h3>Auxiliar de Produção</h3>
+            <div class="company">Vigor Alimentos</div>
+            <p>Controle visual de qualidade em linha de produção — identificando defeitos de embalagem, não conformidades e garantindo conformidade de validade. Paletização padronizada com controle de posicionamento e altura.</p>
+          </div>
+        </div>
+        <div class="exp-item">
+          <div class="exp-date">nov 2021<br>jun 2022</div>
+          <div class="exp-content">
+            <h3>Operador Multifuncional</h3>
+            <div class="company">Polistampo Indústria Metalúrgica</div>
+            <p>Apoio na operação de máquinas industriais em ambiente metalúrgico, desenvolvendo raciocínio de processo e atenção a falhas operacionais.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FORMAÇÃO -->
+    <section>
+      <div class="section-label">formação</div>
+      <div class="edu-list">
+        <div class="edu-item">
+          <div class="edu-info">
+            <h3>Tecnólogo em Análise e Desenvolvimento de Sistemas</h3>
+            <p>UNINTER Centro Universitário Internacional · 2026 – 2029</p>
+          </div>
+          <span class="edu-badge active">cursando</span>
+        </div>
+        <div class="edu-item">
+          <div class="edu-info">
+            <h3>Técnico em Eletroeletrônica</h3>
+            <p>SENAI A. Jacob Lafer · 1500h · 2019 – 2020</p>
+          </div>
+          <span class="edu-badge done">concluído</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROJETOS -->
+    <section>
+      <div class="section-label">projetos</div>
+      <div class="projects-placeholder">
+        <span class="icon">⚙️</span>
+        <h3>Em construção</h3>
+        <p>Projetos chegando em breve.<br>Acompanhe minha evolução no GitHub.</p>
+      </div>
+    </section>
+
+    <!-- CONTATO -->
+    <section>
+      <div class="section-label">contato</div>
+      <div class="contact-links">
+        <a href="https://www.linkedin.com/in/felipedbalbino" target="_blank" class="contact-link">
+          <div class="contact-link-left">
+            <div class="contact-link-icon">in</div>
+            <div class="contact-link-info">
+              <h4>LinkedIn</h4>
+              <p>linkedin.com/in/felipedbalbino</p>
+            </div>
+          </div>
+          <span class="contact-arrow">→</span>
+        </a>
+        <a href="https://github.com/felipedbalbino" target="_blank" class="contact-link">
+          <div class="contact-link-left">
+            <div class="contact-link-icon">gh</div>
+            <div class="contact-link-info">
+              <h4>GitHub</h4>
+              <p>github.com/felipedbalbino</p>
+            </div>
+          </div>
+          <span class="contact-arrow">→</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+      <p>© 2025 Felipe Balbino</p>
+      <p>Feito com <span>HTML + CSS</span> — do zero.</p>
+    </footer>
+
+  </div>
+</body>
+</html>
